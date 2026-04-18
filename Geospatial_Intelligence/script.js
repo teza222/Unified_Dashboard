@@ -1,28 +1,22 @@
-
 const MY_API_KEY = "2UnAKGY0m8FQBD6MBREqxKewoF0Pb";
 
 let myMap;
 let myMarker;
 
-
 const JAMAICA_CENTER = [18.1096, -77.2975];
 const JAMAICA_ZOOM = 10;
 
-
 window.onload = function() {
-    console.log("🇯🇲 Starting Jamaica map initialization...");
+    console.log("🇯🇲 Loading Jamaica map...");
     
-   
     L.mapquest.key = MY_API_KEY;
     
-  
     myMap = L.mapquest.map('map', {
         center: JAMAICA_CENTER,
         layers: L.mapquest.tileLayer('map'),
         zoom: JAMAICA_ZOOM
     });
     
-
     myMarker = L.mapquest.textMarker(JAMAICA_CENTER, {
         text: '🇯🇲 Jamaica',
         position: 'right',
@@ -33,9 +27,8 @@ window.onload = function() {
         }
     }).addTo(myMap);
     
-    console.log("✅ Jamaica map created successfully!");
+    console.log("✅ Map ready!");
     
-
     let searchBox = document.getElementById('searchBox');
     let searchButton = document.getElementById('searchButton');
     
@@ -56,10 +49,7 @@ window.onload = function() {
             }
         }
     };
-    
-    console.log("🎉 App ready! Try searching for 'Kingston', 'Montego Bay', or 'Ocho Rios'");
 };
-
 
 async function searchPlace(placeName) {
     console.log("🔍 Searching for: " + placeName);
@@ -75,20 +65,14 @@ async function searchPlace(placeName) {
         let lng = location.latLng.lng;
         let displayName = location.adminArea5 + ', ' + location.adminArea3;
         
-        console.log("📍 Found at: " + lat + ", " + lng + " - " + displayName);
-        
-      
         myMap.flyTo([lat, lng], 14);
         
-       
         if (myMarker) {
             myMap.removeLayer(myMarker);
         }
         
-       
         let markerColor = (displayName.includes('Jamaica') || location.adminArea1 === 'JM') ? '#009933' : '#ff0000';
         
-      
         myMarker = L.mapquest.textMarker([lat, lng], {
             text: displayName || placeName,
             position: 'right',
@@ -99,31 +83,8 @@ async function searchPlace(placeName) {
             }
         }).addTo(myMap);
         
-        console.log("✅ Marker added at: " + displayName);
-        
     } catch (error) {
         console.error("❌ Error:", error);
-        alert("Location not found. Please try a different place.");
+        alert("Location not found. Try again.");
     }
-}
-
-
-function resetToJamaica() {
-    myMap.flyTo(JAMAICA_CENTER, JAMAICA_ZOOM);
-    
-    if (myMarker) {
-        myMap.removeLayer(myMarker);
-    }
-    
-    myMarker = L.mapquest.textMarker(JAMAICA_CENTER, {
-        text: '🇯🇲 Jamaica',
-        position: 'right',
-        icon: {
-            primaryColor: '#ffd700',
-            secondaryColor: '#009933',
-            size: 'md'
-        }
-    }).addTo(myMap);
-    
-    console.log("🔄 Reset to Jamaica view");
 }
