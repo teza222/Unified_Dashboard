@@ -56,8 +56,16 @@ function displayArticles(articles) {
 
     const summary = article.lead_paragraph || article.snippet || "No summary available.";
 
-     col.innerHTML = `
+       let imageUrl = "https://via.placeholder.com/210x140?text=No+Image";
+    if (Array.isArray(article.multimedia) && article.multimedia.length) {
+      imageUrl = "https://www.nytimes.com/" + article.multimedia[0].url;
+    } else if (article.multimedia?.default?.url) {
+      imageUrl = article.multimedia.default.url;
+    }
+
+    col.innerHTML = `
       <div class="card h-100">
+        <img src="${imageUrl}" class="card-img-top" alt="Article image">
         <div class="card-body">
           <h5 class="card-title">${article.headline.main}</h5>
           <p class="card-text">${summary}</p>
