@@ -1,6 +1,6 @@
 
 
-const MY_API_KEY = "PASTE_YOUR_MAPQUEST_API_KEY_HERE";
+const MY_API_KEY = "API_KEY_HERE";
 
 let myMap;
 let myMarker;
