@@ -9,9 +9,7 @@ const JAMAICA_CENTER = [18.1096, -77.2975];
 const JAMAICA_ZOOM = 10;
 
 
-window.onload = function() {
-    console.log("🇯🇲 Initializing Jamaica Geospatial Dashboard...");
-    
+window.onload = function() {    
     
     L.mapquest.key = MY_API_KEY;
     
@@ -23,10 +21,7 @@ window.onload = function() {
     });
     
     
-    addMarker(JAMAICA_CENTER, '🇯🇲 Jamaica', '#009933');
-    
-    console.log("✅ Map initialized successfully!");
-    
+    addMarker(JAMAICA_CENTER, 'Jamaica', '#009933');    
     
     setupEventListeners();
     
@@ -70,65 +65,54 @@ function setupEventListeners() {
 async function searchPlace(placeName) {
     console.log("🔍 Searching for: " + placeName);
     
-
     showLoading(true);
     
- 
-    const searchAttempts = [
-        placeName + ', Jamaica',
-        placeName + ' Jamaica',
-        placeName
-    ];
-    
-    for (let searchQuery of searchAttempts) {
-        const url = `https://www.mapquestapi.com/geocoding/v1/address?key=${MY_API_KEY}&location=${encodeURIComponent(searchQuery)}`;
+    // Append 'Jamaica' to the primary search to give only local results
+    const searchQuery = placeName.toLowerCase().includes('jamaica') ? placeName : `${placeName}, Jamaica`;
+    const url = `https://www.mapquestapi.com/geocoding/v1/address?key=${MY_API_KEY}&location=${encodeURIComponent(searchQuery)}`;
         
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        const location = data.results?.[0]?.locations?.[0];
+
+        if (location && location.latLng && (location.latLng.lat !== 0 || location.latLng.lng !== 0)) {
+            const lat = location.latLng.lat;
+            const lng = location.latLng.lng;
             
-            if (data.results?.[0]?.locations?.[0]) {
-                const location = data.results[0].locations[0];
-                const lat = location.latLng.lat;
-                const lng = location.latLng.lng;
-                
-               
-                const displayName = buildDisplayName(location) || placeName;
-                
-                console.log("✅ Found: " + displayName + " at " + lat + ", " + lng);
-                
+            const displayName = buildDisplayName(location) || placeName;
+            console.log("✅ Found: " + displayName + " at " + lat + ", " + lng);
             
-                myMap.flyTo([lat, lng], 13);
-                
-              
-                const isInJamaica = location.adminArea1 === 'JM';
-                const markerColor = isInJamaica ? '#009933' : '#dc3545';
-                addMarker([lat, lng], displayName, markerColor);
-                
-               
-                updateLocationBadge(displayName);
+            const isInJamaica = location.adminArea1 === 'JM';
+            if (!isInJamaica) {
                 showLoading(false);
-                
-                return; 
+                showAlert('Location found outside of Jamaica. Please search for a local place.', 'warning');
+                return;
             }
-        } catch (error) {
-            console.log("Error with '" + searchQuery + "':", error);
+
+            myMap.flyTo([lat, lng], 13);
+            
+            addMarker([lat, lng], placeName, '#009933');
+            
+            updateLocationBadge(displayName);
+            showLoading(false);
+            return;
         }
+    } catch (error) {
+        console.error("Search error:", error);
     }
     
-   
     showLoading(false);
     showAlert('Location not found. Try: Kingston, Montego Bay, Ocho Rios, or Negril', 'danger');
-    console.log("❌ Could not find: " + placeName);
 }
 
 
 function buildDisplayName(location) {
-    const parts = [];
-    if (location.street) parts.push(location.street);
-    if (location.adminArea5) parts.push(location.adminArea5);
-    if (location.adminArea3) parts.push(location.adminArea3);
-    return parts.join(', ');
+    return [location.street, location.adminArea5, location.adminArea3]
+        .filter(part => part && part.trim() !== "")
+        .join(', ');
 }
 
 
@@ -142,7 +126,7 @@ function addMarker(coordinates, text, color) {
         position: 'right',
         icon: {
             primaryColor: color,
-            secondaryColor: '#333',
+            secondaryColor: '#333333',
             size: 'md'
         }
     }).addTo(myMap);
@@ -174,8 +158,7 @@ function showAlert(message, type) {
 
 function resetToJamaica() {
     myMap.flyTo(JAMAICA_CENTER, JAMAICA_ZOOM);
-    addMarker(JAMAICA_CENTER, '🇯🇲 Jamaica', '#009933');
+    addMarker(JAMAICA_CENTER, 'Jamaica', '#009933');
     updateLocationBadge('Jamaica');
     document.getElementById('searchBox').value = '';
-    console.log("🔄 Reset to Jamaica view");
 }
