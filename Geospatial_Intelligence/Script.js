@@ -6,9 +6,10 @@ let myMap;
 let myMarker;
 
 const JAMAICA_CENTER = [18.1096, -77.2975];
-const JAMAICA_ZOOM = 10;
+const JAMAICA_ZOOM = 9;
 
 
+// Initialize the map when the page loads
 window.onload = function() {    
     
     L.mapquest.key = MY_API_KEY;
@@ -20,12 +21,8 @@ window.onload = function() {
         zoom: JAMAICA_ZOOM
     });
     
-    
-    addMarker(JAMAICA_CENTER, 'Jamaica', '#009933');    
-    
+    addMarker(JAMAICA_CENTER, 'Jamaica', '#009933');     
     setupEventListeners();
-    
-   
     updateLocationBadge('Jamaica');
 };
 
@@ -63,7 +60,6 @@ function setupEventListeners() {
 
 
 async function searchPlace(placeName) {
-    console.log("🔍 Searching for: " + placeName);
     
     showLoading(true);
     
@@ -83,7 +79,6 @@ async function searchPlace(placeName) {
             const lng = location.latLng.lng;
             
             const displayName = buildDisplayName(location) || placeName;
-            console.log("✅ Found: " + displayName + " at " + lat + ", " + lng);
             
             const isInJamaica = location.adminArea1 === 'JM';
             if (!isInJamaica) {
