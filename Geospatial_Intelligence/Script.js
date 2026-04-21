@@ -14,7 +14,6 @@ window.onload = function() {
     
     L.mapquest.key = MY_API_KEY;
     
-   
     myMap = L.mapquest.map('map', {
         center: JAMAICA_CENTER,
         layers: L.mapquest.tileLayer('map'),
