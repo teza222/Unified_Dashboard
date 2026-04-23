@@ -34,15 +34,26 @@ const nightColors = {
     glow: 'rgba(255, 255, 255, 0.1)'
 };
 
+/**
+ * @returns {Object} The color configuration object for the current mode.
+ * @description Returns either day or night color schemes based on the isDayMode state.
+ */
 function getColors() {
     return isDayMode ? dayColors : nightColors;
 }
 
+/**
+ * @param {number} degrees - The angle in degrees.
+ * @returns {number} The angle in radians.
+ * @description Converts a degree value to radians for use in Canvas drawing methods.
+ */
 function degreesToRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
 
-// Draw the clock
+/**
+ * @description Renders the clock's face, including the background, border, hour markers, and numbers on the canvas.
+ */
 function drawClockFace() {
     const colors = getColors();
 
@@ -126,7 +137,14 @@ function drawClockFace() {
     }
 }
 
-// Draw clock hand 
+/**
+ * @param {number} angle - The rotation angle of the hand.
+ * @param {number} length - The length of the hand from the center.
+ * @param {number} width - The stroke width of the hand.
+ * @param {string} color - The stroke color of the hand.
+ * @param {boolean} hasArrow - Whether to draw an arrow tip at the end of the hand.
+ * @description Draws a clock hand starting from the center point of the canvas.
+ */
 function drawHand(angle, length, width, color, hasArrow = false) {
     const radians = degreesToRadians(angle);
 
@@ -162,6 +180,9 @@ function drawHand(angle, length, width, color, hasArrow = false) {
     }
 }
 
+/**
+ * @description Draws the center dot of the clock face with a highlight effect.
+ */
 function drawCenterDot() {
     const colors = getColors();
 
@@ -178,7 +199,9 @@ function drawCenterDot() {
     ctx.fill();
 }
 
-// Update and render the clock
+/**
+ * @description Calculates the current time and redraws the entire clock on the canvas.
+ */
 function updateClock() {
     const colors = getColors();
     const now = new Date();
@@ -210,7 +233,9 @@ function updateClock() {
     drawCenterDot();
 }
 
-// Loop to continuously update the clock
+/**
+ * @description Initiates the recursive animation loop using requestAnimationFrame to update the clock.
+ */
 function animate() {
     updateClock();
     requestAnimationFrame(animate);  

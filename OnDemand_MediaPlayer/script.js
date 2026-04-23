@@ -1,4 +1,3 @@
-const API_KEY = 'AIzaSyCfj0GSxgmDimOqFISRSCCjhO6jgoFAbvM';
 const SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search';
 
 const searchForm = document.getElementById('searchForm');
@@ -7,6 +6,12 @@ const resultsContainer = document.getElementById('results');
 const videoPlayer = document.getElementById('videoPlayer');
 const statusLabel = document.getElementById('status');
 
+/**
+ * @param {Event} event - The search form submission event.
+ * @returns {Promise<void>}
+ * @description Prevents default form submission, validates input, and initiates 
+ * the asynchronous fetch request to the YouTube Data API.
+ */
 searchForm.addEventListener('submit', async event => {
     event.preventDefault();
     const query = searchInput.value.trim();
@@ -19,9 +24,13 @@ searchForm.addEventListener('submit', async event => {
     resultsContainer.innerHTML = '';
 
     try {
-        const response = await fetch(`${SEARCH_URL}?part=snippet&type=video&maxResults=5&q=${encodeURIComponent(query)}&key=${API_KEY}`);
+        const response = await fetch(`${SEARCH_URL}?part=snippet&type=video&maxResults=5&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`);
         if (!response.ok) {
-            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            // Log detailed API error to the console for technical review
+            console.error("YouTube API Error Details:", errorData);
+            const errorMessage = errorData.error?.message || `API Error: ${response.status}`;
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -37,11 +46,16 @@ searchForm.addEventListener('submit', async event => {
             setVideo(firstVideoId);
         }
     } catch (error) {
-        console.error(error);
-        statusLabel.textContent = 'Unable to load videos. Please try again later.';
+        console.error("Video search failed:", error.message);
+        statusLabel.textContent = `Search failed: ${error.message}. Please check your API key in config.js.`;
     }
 });
 
+/**
+ * @param {Array} items - The list of video items from YouTube API .
+ * @returns {void}
+ * @description Generates HTML card elements for each video and injects them into the results container.
+ */
 function renderResults(items) {
     const cards = items.map(item => {
         const videoId = item.id.videoId;
@@ -66,6 +80,9 @@ function renderResults(items) {
     attachCardListeners();
 }
 
+/**
+ * @description Finds all rendered result cards and attaches click event listeners to play the respective video.
+ */
 function attachCardListeners() {
     const cards = resultsContainer.querySelectorAll('.result-card');
     cards.forEach(card => {
@@ -78,6 +95,10 @@ function attachCardListeners() {
     });
 }
 
+/**
+ * @param {string} videoId - The YouTube unique video ID.
+ * @description Updates the iframe source to embed the selected video and updates the status label.
+ */
 function setVideo(videoId) {
     videoPlayer.src = `https://www.youtube.com/embed/${videoId}`;
     statusLabel.textContent = 'Playing selected video.';

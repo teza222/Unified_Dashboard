@@ -1,4 +1,3 @@
-const apiKey = "U8IFO1Ay2pxX3WAk2HsAElEtFeLObSbrp0CeVd9ncfWGE0vt";
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 const resultsDiv = document.getElementById("results");
@@ -22,28 +21,36 @@ searchInput.addEventListener("keypress", (event) => {
   }
 });
 
-        //Auto Load Trending News - DO NOTE USERS CAN STILL SEARCH JUST EXTRA STUFF
+        //Auto Load Trending News on page load
 window.addEventListener("DOMContentLoaded", () => {
   fetchArticles("trending"); 
 });
 
+/**
+ * @param {string} query - The search keyword for the articles.
+ * @description Fetches articles from the NYTimes API based on the query.
+ */
 async function fetchArticles(query) {
   resultsDiv.innerHTML = "";
-  spinner.classList.remove("d-none"); // Spinner
+  spinner.classList.remove("d-none"); 
 
   try {
     const response = await fetch(
-      `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${query}&api-key=${apiKey}`
+      `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${query}&api-key=${NYTIMES_API_KEY}`
     );
     const data = await response.json();
     displayArticles(data.response.docs);
   } catch (error) {
     resultsDiv.innerHTML = `<p class="text-danger">Error fetching articles.</p>`;
   } finally {
-    spinner.classList.add("d-none"); // Hide spinner
+    spinner.classList.add("d-none"); 
   }
 }
 
+/**
+ * @param {Array} articles - An array of article document objects from the API response.
+ * @description Iterates through article data to create and append card elements to the results grid.
+ */
 function displayArticles(articles) {
   if (articles.length === 0) {
     resultsDiv.innerHTML = `<p class="text-muted">No results found.</p>`;

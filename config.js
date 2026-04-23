@@ -1,0 +1,4 @@
+const YOUTUBE_API_KEY = "AIzaSyCfj0GSxgmDimOqFISRSCCjhO6jgoFAbvM"; 
+const GEOCODING_API_KEY = "dePastogvfeCHckeZxW6RPy96jTqAH0X"; 
+const NYTIMES_API_KEY = "U8IFO1Ay2pxX3WAk2HsAElEtFeLObSbrp0CeVd9ncfWGE0vt";
+
